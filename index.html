@@ -1,256 +1,435 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Okechukwu Chinedu Favour | Software & Systems Engineer Portfolio</title>
+    <title>Okechukwu Chinedu Favour | Software & Systems Engineer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030712;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
         .font-code { font-family: 'Fira Code', monospace; }
-        .glass { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); }
-        .glow-accent:hover { box-shadow: 0 0 25px rgba(59, 130, 246, 0.35); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #030712; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+
+        /* Ambient Glowing Mouse Tracker */
+        .cursor-glow {
+            pointer-events: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, rgba(16, 185, 129, 0.03) 40%, transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: transform 0.15s ease-out;
+            z-index: 0;
+        }
+
+        /* Glassmorphism & Card Hover Effects */
+        .glass-card {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5), 0 0 25px rgba(59, 130, 246, 0.15);
+        }
+
+        .glow-button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glow-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg) translateY(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .glow-button:hover::after {
+            transform: rotate(45deg) translateY(100%);
+        }
+
+        /* Typing Effect Caret */
+        .typing-caret::after {
+            content: '█';
+            animation: blink 1s infinite;
+            color: #3b82f6;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-blue-600 selection:text-white">
+<body class="relative min-h-screen selection:bg-blue-600 selection:text-white">
 
-    <!-- Navbar -->
-    <nav class="fixed top-0 left-0 w-full z-50 glass border-b border-slate-800/80">
+    <!-- Ambient Glow Background -->
+    <div id="cursorGlow" class="cursor-glow hidden md:block"></div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 glass-card px-5 py-3 rounded-xl border border-emerald-500/40 text-emerald-300 font-code text-xs flex items-center gap-3 translate-y-20 opacity-0 transition-all duration-300">
+        <i class="fas fa-check-circle text-base"></i>
+        <span id="toastMsg">Copied to clipboard!</span>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="fixed top-0 left-0 w-full z-40 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80">
         <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" class="text-xl font-bold font-code tracking-tight text-blue-400">
-                favour<span class="text-slate-400">@dev</span>:<span class="text-emerald-400">~</span>$
+            <a href="#" class="text-lg font-bold font-code tracking-tight text-slate-100 flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-blue-500 animate-ping"></span>
+                <span class="text-blue-400">favour</span>@<span class="text-emerald-400">dev</span>:~#
             </a>
+            
             <div class="hidden md:flex space-x-8 text-sm font-medium text-slate-300">
-                <a href="#about" class="hover:text-blue-400 transition">About</a>
-                <a href="#tech" class="hover:text-blue-400 transition">Tech Stack</a>
-                <a href="#projects" class="hover:text-blue-400 transition">Projects</a>
-                <a href="#experience" class="hover:text-blue-400 transition">SIWES / Experience</a>
-                <a href="#contact" class="hover:text-blue-400 transition">Contact</a>
+                <a href="#about" class="hover:text-blue-400 transition flex items-center gap-1.5"><i class="fas fa-user-astronaut text-xs text-blue-500"></i> About</a>
+                <a href="#tech" class="hover:text-blue-400 transition flex items-center gap-1.5"><i class="fas fa-layer-group text-xs text-emerald-500"></i> Stack</a>
+                <a href="#projects" class="hover:text-blue-400 transition flex items-center gap-1.5"><i class="fas fa-cubes text-xs text-amber-500"></i> Projects</a>
+                <a href="#terminal" class="hover:text-blue-400 transition flex items-center gap-1.5"><i class="fas fa-terminal text-xs text-purple-500"></i> CLI</a>
             </div>
-            <a href="https://github.com/Chiny321" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2">
-                <i class="fab fa-github"></i> GitHub
-            </a>
+
+            <div class="flex items-center gap-3">
+                <button onclick="copyToClipboard('chinedufavour042@gmail.com', 'Email copied!')" class="glass-card px-3 py-1.5 rounded-lg text-xs font-code text-slate-300 hover:text-white flex items-center gap-2">
+                    <i class="fas fa-envelope text-blue-400"></i> <span class="hidden sm:inline">Contact</span>
+                </button>
+                <a href="https://github.com/Chiny321" target="_blank" class="glow-button bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-lg text-xs font-semibold font-code transition flex items-center gap-2">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="pt-36 pb-20 px-6 max-w-6xl mx-auto">
-        <div class="grid md:grid-cols-12 gap-8 items-center">
-            <div class="md:col-span-8 space-y-6">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-950/80 border border-blue-800/50 text-blue-400 text-xs font-code">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Final Year Computer Science Student
+    <section id="about" class="relative z-10 pt-36 pb-20 px-6 max-w-6xl mx-auto">
+        <div class="grid md:grid-cols-12 gap-10 items-center">
+            
+            <div class="md:col-span-7 space-y-6">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-950/60 border border-blue-800/40 text-blue-400 text-xs font-code">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Final Year CS Student @ Godfrey Okoye Univ.
                 </div>
-                <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-100">
-                    Okechukwu Chinedu <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Favour</span>
+                
+                <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight text-white">
+                    Okechukwu Chinedu <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-sky-300 to-emerald-400">Favour</span>
                 </h1>
-                <p class="text-lg text-slate-400 leading-relaxed max-w-2xl">
-                    Software Developer & Computer Science undergraduate at Godfrey Okoye University. Specialized in backend engineering with <strong class="text-slate-200">ASP.NET Core Web API (.NET 8)</strong>, <strong class="text-slate-200">PostgreSQL</strong>, <strong class="text-slate-200">Python</strong>, and cybersecurity tooling on Linux.
+                
+                <p class="text-base sm:text-lg text-slate-400 leading-relaxed font-light">
+                    Full-Stack & Systems Developer specializing in <strong class="text-slate-200 font-semibold">C# ASP.NET Core Web API (.NET 8)</strong>, <strong class="text-slate-200 font-semibold">PostgreSQL</strong>, <strong class="text-slate-200 font-semibold">Python</strong>, and backend security tooling on <strong class="text-slate-200 font-semibold">Ubuntu Linux</strong>.
                 </p>
+
                 <div class="flex flex-wrap gap-4 pt-2">
-                    <a href="#projects" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-3 rounded-lg transition glow-accent flex items-center gap-2">
-                        View Projects <i class="fas fa-arrow-right text-xs"></i>
+                    <a href="#projects" class="glow-button bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-all shadow-lg shadow-blue-600/25 flex items-center gap-2">
+                        Explore Work <i class="fas fa-arrow-right text-xs"></i>
                     </a>
-                    <a href="#contact" class="bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 font-medium px-6 py-3 rounded-lg transition">
-                        Get In Touch
+                    <a href="#terminal" class="glass-card text-slate-300 font-code text-xs px-6 py-3 rounded-xl transition flex items-center gap-2 hover:text-white">
+                        <i class="fas fa-terminal text-emerald-400"></i> Open Interactive CLI
                     </a>
                 </div>
-            </div>
-            <div class="md:col-span-4 glass p-6 rounded-2xl border border-slate-800 font-code text-xs space-y-3">
-                <div class="flex items-center gap-2 text-slate-500 border-b border-slate-800 pb-2">
-                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
-                    <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
-                    <span class="w-3 h-3 rounded-full bg-green-500"></span>
-                    <span class="ml-auto text-slate-600">bash</span>
+
+                <div class="pt-6 border-t border-slate-800/80 grid grid-cols-3 gap-4 text-center sm:text-left font-code">
+                    <div>
+                        <p class="text-xl font-bold text-white">.NET 8</p>
+                        <p class="text-xs text-slate-500">Primary Backend</p>
+                    </div>
+                    <div>
+                        <p class="text-xl font-bold text-emerald-400">PostgreSQL</p>
+                        <p class="text-xs text-slate-500">Relational DB</p>
+                    </div>
+                    <div>
+                        <p class="text-xl font-bold text-sky-400">Linux</p>
+                        <p class="text-xs text-slate-500">Primary OS</p>
+                    </div>
                 </div>
-                <p class="text-blue-400">$ cat developer_profile.json</p>
-                <p class="text-slate-300">{</p>
-                <p class="pl-4 text-emerald-400">"status": <span class="text-amber-300">"Building & Deploying"</span>,</p>
-                <p class="pl-4 text-emerald-400">"primary_stack": <span class="text-amber-300">["C# .NET 8", "PostgreSQL", "Python"]</span>,</p>
-                <p class="pl-4 text-emerald-400">"os_preference": <span class="text-amber-300">"Ubuntu Linux"</span>,</p>
-                <p class="pl-4 text-emerald-400">"siwes_host": <span class="text-amber-300">"Early Code Institute, Abuja"</span></p>
-                <p class="text-slate-300">}</p>
             </div>
+
+            <!-- Terminal Hero Box -->
+            <div class="md:col-span-5 glass-card rounded-2xl p-5 font-code text-xs space-y-3 relative overflow-hidden group border-slate-800">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-red-500/80 inline-block"></span>
+                        <span class="w-3 h-3 rounded-full bg-yellow-500/80 inline-block"></span>
+                        <span class="w-3 h-3 rounded-full bg-green-500/80 inline-block"></span>
+                    </div>
+                    <span class="text-slate-500">profile_overview.sh</span>
+                </div>
+
+                <div class="space-y-2 text-slate-300">
+                    <p class="text-blue-400"><span class="text-emerald-400">favour@dev:~$</span> ./get_profile_specs.sh</p>
+                    <p class="text-slate-400">[+] Fetching developer specs...</p>
+                    <div class="pl-3 border-l-2 border-blue-500/50 space-y-1.5 text-slate-300">
+                        <p><span class="text-emerald-400">Name:</span> Okechukwu Chinedu Favour</p>
+                        <p><span class="text-emerald-400">SIWES Host:</span> EarlyCode Institute, Abuja</p>
+                        <p><span class="text-emerald-400">Supervisor:</span> Mr. Henry</p>
+                        <p><span class="text-emerald-400">Core Projects:</span> QuizEngineWeb, Cyber Vulnerability Snapshotter</p>
+                        <p><span class="text-emerald-400">Status:</span> Final Year Capstone & Job-Ready Projects</p>
+                    </div>
+                    <p class="text-slate-500 text-[10px] pt-2">[INFO] Ready for software development roles.</p>
+                </div>
+            </div>
+
         </div>
     </section>
 
-    <!-- Tech Stack Section -->
-    <section id="tech" class="py-16 bg-slate-900/50 border-y border-slate-800/80">
+    <!-- Tech Stack Grid -->
+    <section id="tech" class="relative z-10 py-20 bg-slate-950/60 border-y border-slate-800/80">
         <div class="max-w-6xl mx-auto px-6">
-            <h2 class="text-2xl font-bold text-slate-100 mb-8 flex items-center gap-3">
-                <i class="fas fa-code text-blue-400"></i> Tech Stack & Toolkit
-            </h2>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center hover:border-blue-500/50 transition">
-                    <i class="fab fa-windows text-3xl text-blue-400 mb-2"></i>
-                    <p class="font-semibold text-sm">ASP.NET Core</p>
-                    <span class="text-xs text-slate-500">.NET 8 Web API</span>
+            <div class="text-center max-w-2xl mx-auto mb-14">
+                <h2 class="text-3xl font-extrabold text-white tracking-tight">Technical Stack & Engineering Tools</h2>
+                <p class="text-slate-400 text-sm mt-2">Tools, frameworks, and databases utilized across production APIs and system applications.</p>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                <div class="glass-card p-5 rounded-2xl text-center group hover:border-blue-500/50">
+                    <i class="fab fa-windows text-3xl text-blue-400 mb-3 group-hover:scale-110 transition"></i>
+                    <h3 class="font-bold text-sm text-white">ASP.NET Core</h3>
+                    <p class="text-xs text-slate-500 mt-1 font-code">.NET 8 Web API</p>
                 </div>
-                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center hover:border-blue-500/50 transition">
-                    <i class="fas fa-database text-3xl text-sky-400 mb-2"></i>
-                    <p class="font-semibold text-sm">PostgreSQL</p>
-                    <span class="text-xs text-slate-500">EF Core / Npgsql</span>
+                <div class="glass-card p-5 rounded-2xl text-center group hover:border-sky-500/50">
+                    <i class="fas fa-database text-3xl text-sky-400 mb-3 group-hover:scale-110 transition"></i>
+                    <h3 class="font-bold text-sm text-white">PostgreSQL</h3>
+                    <p class="text-xs text-slate-500 mt-1 font-code">EF Core / Npgsql</p>
                 </div>
-                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center hover:border-blue-500/50 transition">
-                    <i class="fab fa-python text-3xl text-yellow-400 mb-2"></i>
-                    <p class="font-semibold text-sm">Python</p>
-                    <span class="text-xs text-slate-500">Flask / Data Analysis</span>
+                <div class="glass-card p-5 rounded-2xl text-center group hover:border-yellow-500/50">
+                    <i class="fab fa-python text-3xl text-yellow-400 mb-3 group-hover:scale-110 transition"></i>
+                    <h3 class="font-bold text-sm text-white">Python</h3>
+                    <p class="text-xs text-slate-500 mt-1 font-code">Flask / Automation</p>
                 </div>
-                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center hover:border-blue-500/50 transition">
-                    <i class="fab fa-js text-3xl text-amber-300 mb-2"></i>
-                    <p class="font-semibold text-sm">JavaScript</p>
-                    <span class="text-xs text-slate-500">Vanilla ES6+ / Fetch API</span>
+                <div class="glass-card p-5 rounded-2xl text-center group hover:border-amber-500/50">
+                    <i class="fab fa-js text-3xl text-amber-300 mb-3 group-hover:scale-110 transition"></i>
+                    <h3 class="font-bold text-sm text-white">JavaScript</h3>
+                    <p class="text-xs text-slate-500 mt-1 font-code">Vanilla / Fetch API</p>
                 </div>
-                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center hover:border-blue-500/50 transition">
-                    <i class="fab fa-linux text-3xl text-slate-200 mb-2"></i>
-                    <p class="font-semibold text-sm">Linux / Ubuntu</p>
-                    <span class="text-xs text-slate-500">Shell / SysAdmin</span>
+                <div class="glass-card p-5 rounded-2xl text-center group hover:border-emerald-500/50">
+                    <i class="fab fa-linux text-3xl text-emerald-400 mb-3 group-hover:scale-110 transition"></i>
+                    <h3 class="font-bold text-sm text-white">Ubuntu Linux</h3>
+                    <p class="text-xs text-slate-500 mt-1 font-code">SysAdmin / Shell</p>
                 </div>
-                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center hover:border-blue-500/50 transition">
-                    <i class="fab fa-docker text-3xl text-blue-500 mb-2"></i>
-                    <p class="font-semibold text-sm">DevOps Tools</p>
-                    <span class="text-xs text-slate-500">Docker / Git</span>
+                <div class="glass-card p-5 rounded-2xl text-center group hover:border-purple-500/50">
+                    <i class="fas fa-code-branch text-3xl text-purple-400 mb-3 group-hover:scale-110 transition"></i>
+                    <h3 class="font-bold text-sm text-white">Git & DevOps</h3>
+                    <p class="text-xs text-slate-500 mt-1 font-code">GitHub / Docker</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Projects Section -->
-    <section id="projects" class="py-20 max-w-6xl mx-auto px-6">
-        <div class="flex justify-between items-end mb-12">
+    <section id="projects" class="relative z-10 py-24 max-w-6xl mx-auto px-6">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
             <div>
-                <h2 class="text-3xl font-bold text-slate-100">Featured Projects</h2>
-                <p class="text-slate-400 mt-1">Full-stack web applications, REST APIs, and system security implementations.</p>
+                <span class="text-xs font-code text-blue-400 uppercase tracking-widest">[ Selected Works ]</span>
+                <h2 class="text-3xl font-bold text-white mt-1">Featured Engineering Projects</h2>
             </div>
+            <p class="text-slate-400 text-sm max-w-md">Decoupled web APIs, final year vulnerability security tools, and responsive interfaces.</p>
         </div>
 
         <div class="grid md:grid-cols-2 gap-8">
-            <!-- Project 1 -->
-            <div class="glass border border-slate-800 rounded-2xl p-6 hover:border-slate-700 transition flex flex-col justify-between">
+            <!-- Project Card 1 -->
+            <div class="glass-card rounded-2xl p-6 flex flex-col justify-between group">
                 <div>
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="px-3 py-1 bg-blue-950 border border-blue-800 text-blue-400 text-xs font-code rounded-full">Full-Stack Web App</span>
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="px-3 py-1 bg-blue-950/80 border border-blue-800/60 text-blue-400 text-xs font-code rounded-full">Full-Stack Web API</span>
                         <a href="https://github.com/Chiny321/QuizEngineWeb" target="_blank" class="text-slate-400 hover:text-white transition"><i class="fab fa-github text-lg"></i></a>
                     </div>
-                    <h3 class="text-xl font-bold text-slate-100 mb-2">QuizEngineWeb API & SPA</h3>
-                    <p class="text-slate-400 text-sm mb-4 leading-relaxed">
-                        A decoupled RESTful quiz application refactored from a C# console app into a distributed ASP.NET Core (.NET 8) Web API backed by PostgreSQL and an interactive vanilla JS single-page frontend.
+                    <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition mb-2">QuizEngineWeb API & SPA</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">
+                        Decoupled assessment platform converted from a C# console app into a RESTful ASP.NET Core (.NET 8) Web API backed by PostgreSQL and native JavaScript.
                     </p>
-                    <div class="flex flex-wrap gap-2 mb-6 font-code text-xs">
-                        <span class="bg-slate-900 text-slate-300 px-2 py-1 rounded">C# ASP.NET Core</span>
-                        <span class="bg-slate-900 text-slate-300 px-2 py-1 rounded">PostgreSQL</span>
-                        <span class="bg-slate-900 text-slate-300 px-2 py-1 rounded">EF Core</span>
-                        <span class="bg-slate-900 text-slate-300 px-2 py-1 rounded">Fetch API</span>
+                    <div class="flex flex-wrap gap-2 font-code text-xs mb-6">
+                        <span class="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-slate-300">C# .NET 8</span>
+                        <span class="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-slate-300">PostgreSQL</span>
+                        <span class="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-slate-300">EF Core</span>
                     </div>
                 </div>
-                <div class="pt-4 border-t border-slate-800/80 flex justify-between items-center text-xs">
-                    <span class="text-emerald-400 flex items-center gap-1"><i class="fas fa-check-circle"></i> Live / Repository Active</span>
-                    <a href="https://github.com/Chiny321/QuizEngineWeb" target="_blank" class="text-blue-400 hover:underline">View Code &rarr;</a>
+                <div class="pt-4 border-t border-slate-800/80 flex justify-between items-center text-xs font-code">
+                    <span class="text-emerald-400 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Repository Synced</span>
+                    <a href="https://github.com/Chiny321/QuizEngineWeb" target="_blank" class="text-blue-400 hover:underline">Code & Specs &rarr;</a>
                 </div>
             </div>
 
-            <!-- Project 2 -->
-            <div class="glass border border-slate-800 rounded-2xl p-6 hover:border-slate-700 transition flex flex-col justify-between">
+            <!-- Project Card 2 -->
+            <div class="glass-card rounded-2xl p-6 flex flex-col justify-between group">
                 <div>
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="px-3 py-1 bg-emerald-950 border border-emerald-800 text-emerald-400 text-xs font-code rounded-full">Final Year Research</span>
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="px-3 py-1 bg-emerald-950/80 border border-emerald-800/60 text-emerald-400 text-xs font-code rounded-full">Final Year Capstone Project</span>
                     </div>
-                    <h3 class="text-xl font-bold text-slate-100 mb-2">Automated Vulnerability Snapshotter</h3>
-                    <p class="text-slate-400 text-sm mb-4 leading-relaxed">
-                        A lightweight security auditing system that captures host state telemetry (listening ports, software packages, system sockets) and computes delta configuration drift to detect unauthorized changes.
+                    <h3 class="text-xl font-bold text-white group-hover:text-emerald-400 transition mb-2">Automated Vulnerability Snapshotter</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">
+                        Cyber security evaluation tool taking automated host telemetry snapshots (listening ports, process sockets, system packages) to identify baseline drift and vulnerability exposure for SMEs.
                     </p>
-                    <div class="flex flex-wrap gap-2 mb-6 font-code text-xs">
-                        <span class="bg-slate-900 text-slate-300 px-2 py-1 rounded">Python</span>
-                        <span class="bg-slate-900 text-slate-300 px-2 py-1 rounded">Linux POSIX APIs</span>
-                        <span class="bg-slate-900 text-slate-300 px-2 py-1 rounded">SQLite / MySQL</span>
-                        <span class="bg-slate-900 text-slate-300 px-2 py-1 rounded">CLI / HTML Reports</span>
+                    <div class="flex flex-wrap gap-2 font-code text-xs mb-6">
+                        <span class="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-slate-300">Python</span>
+                        <span class="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-slate-300">Flask</span>
+                        <span class="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-slate-300">SQLite / POSIX Sockets</span>
                     </div>
                 </div>
-                <div class="pt-4 border-t border-slate-800/80 flex justify-between items-center text-xs">
-                    <span class="text-amber-400 flex items-center gap-1"><i class="fas fa-spinner animate-spin"></i> Final Year Capstone</span>
-                    <span class="text-slate-500">Godfrey Okoye Univ.</span>
-                </div>
-            </div>
-
-            <!-- Project 3 -->
-            <div class="glass border border-slate-800 rounded-2xl p-6 hover:border-slate-700 transition flex flex-col justify-between">
-                <div>
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="px-3 py-1 bg-purple-950 border border-purple-800 text-purple-400 text-xs font-code rounded-full">Frontend UI Prototype</span>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-100 mb-2">XL-LENT Storefront</h3>
-                    <p class="text-slate-400 text-sm mb-4 leading-relaxed">
-                        An e-commerce user interface constructed with dynamic category selection pills, live product search filtering, shopping cart badge status management, and dynamic CSS variables.
-                    </p>
-                    <div class="flex flex-wrap gap-2 mb-6 font-code text-xs">
-                        <span class="bg-slate-900 text-slate-300 px-2 py-1 rounded">HTML5</span>
-                        <span class="bg-slate-900 text-slate-300 px-2 py-1 rounded">CSS3 Custom Props</span>
-                        <span class="bg-slate-900 text-slate-300 px-2 py-1 rounded">JavaScript DOM</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Project 4 -->
-            <div class="glass border border-slate-800 rounded-2xl p-6 hover:border-slate-700 transition flex flex-col justify-between">
-                <div>
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="px-3 py-1 bg-amber-950 border border-amber-800 text-amber-400 text-xs font-code rounded-full">Data Engineering</span>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-100 mb-2">Enterprise Certification Schedule Pipeline</h3>
-                    <p class="text-slate-400 text-sm mb-4 leading-relaxed">
-                        Structured data cleaning, validation, and automation pipeline managing student certification logistics, payment verification, and schedule printing.
-                    </p>
-                    <div class="flex flex-wrap gap-2 mb-6 font-code text-xs">
-                        <span class="bg-slate-900 text-slate-300 px-2 py-1 rounded">Google Sheets</span>
-                        <span class="bg-slate-900 text-slate-300 px-2 py-1 rounded">Excel Data Cleaning</span>
-                        <span class="bg-slate-900 text-slate-300 px-2 py-1 rounded">Validation Rules</span>
-                    </div>
+                <div class="pt-4 border-t border-slate-800/80 flex justify-between items-center text-xs font-code">
+                    <span class="text-amber-400"><i class="fas fa-graduation-cap"></i> Academic Research</span>
+                    <span class="text-slate-500">Godfrey Okoye University</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SIWES / Experience Section -->
-    <section id="experience" class="py-16 bg-slate-900/40 border-t border-slate-800">
-        <div class="max-w-6xl mx-auto px-6">
-            <h2 class="text-2xl font-bold text-slate-100 mb-8 flex items-center gap-3">
-                <i class="fas fa-briefcase text-blue-400"></i> Industrial Training & Background
-            </h2>
-            <div class="border-l-2 border-slate-800 pl-6 space-y-8">
-                <div>
-                    <div class="flex flex-wrap justify-between items-baseline mb-1">
-                        <h3 class="text-lg font-bold text-slate-100">Software Engineering Intern (SIWES)</h3>
-                        <span class="text-xs font-code text-blue-400">Early Code Institute, Abuja</span>
-                    </div>
-                    <p class="text-slate-400 text-sm mb-2">Supervised by Mr. Henry | Python in Data Science & C# Software Development</p>
-                    <ul class="text-slate-400 text-sm space-y-1 list-disc list-inside">
-                        <li>Refactored legacy console applications into stateless REST APIs using ASP.NET Core and Entity Framework Core.</li>
-                        <li>Configured PostgreSQL relational schemas with custom indexes, UTC timestamp handlers, and check constraints.</li>
-                        <li>Designed data validation rules and automated workflows for student records and certificate schedule logistics.</li>
-                    </ul>
+    <!-- Terminal Emulator Section -->
+    <section id="terminal" class="relative z-10 py-20 bg-slate-950/70 border-t border-slate-800">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-10">
+                <span class="text-xs font-code text-purple-400 uppercase tracking-widest">[ Interactive Console ]</span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">Terminal Shell</h2>
+                <p class="text-slate-400 text-xs mt-1">Type commands below or click the quick action chips to run shell queries.</p>
+            </div>
+
+            <!-- Quick Action Chips -->
+            <div class="flex flex-wrap justify-center gap-2 mb-4 font-code text-xs">
+                <button onclick="runCommand('help')" class="px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:border-purple-500 hover:text-white transition">help</button>
+                <button onclick="runCommand('skills')" class="px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:border-purple-500 hover:text-white transition">skills</button>
+                <button onclick="runCommand('siwes')" class="px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:border-purple-500 hover:text-white transition">siwes</button>
+                <button onclick="runCommand('capstone')" class="px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:border-purple-500 hover:text-white transition">capstone</button>
+                <button onclick="runCommand('clear')" class="px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-red-400 hover:bg-red-950/40 transition">clear</button>
+            </div>
+
+            <div class="glass-card rounded-2xl border border-slate-800 font-code text-xs p-5 shadow-2xl space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3 text-slate-500">
+                    <span class="flex items-center gap-2"><i class="fas fa-terminal text-purple-400"></i> favour@ubuntu-desktop:~</span>
+                    <span>bash 5.2</span>
                 </div>
+
+                <div id="terminalOutput" class="space-y-2 min-h-[160px] max-h-[300px] overflow-y-auto text-slate-300 pr-2">
+                    <p class="text-slate-500">Welcome! Type <span class="text-purple-400 font-bold">help</span> to list available commands.</p>
+                </div>
+
+                <form onsubmit="handleTerminalSubmit(event)" class="flex items-center gap-2 border-t border-slate-800/80 pt-3">
+                    <span class="text-emerald-400 font-bold">favour@dev:~$</span>
+                    <input type="text" id="terminalInput" class="bg-transparent border-none outline-none flex-1 text-white font-code placeholder-slate-600" placeholder="Type command here..." autocomplete="off">
+                    <button type="submit" class="text-slate-500 hover:text-purple-400"><i class="fas fa-paper-plane"></i></button>
+                </form>
             </div>
         </div>
     </section>
 
-    <!-- Contact / Footer -->
-    <footer id="contact" class="py-16 border-t border-slate-800 text-center">
-        <div class="max-w-4xl mx-auto px-6 space-y-6">
-            <h2 class="text-2xl font-bold text-slate-100">Let's Connect</h2>
-            <p class="text-slate-400 text-sm max-w-md mx-auto">
-                Open for software development roles, tech collaborations, and technical discussions.
-            </p>
-            <div class="flex justify-center gap-6 pt-2">
-                <a href="https://github.com/Chiny321" target="_blank" class="w-12 h-12 rounded-full glass border border-slate-800 flex items-center justify-center text-slate-300 hover:text-blue-400 hover:border-blue-500/50 transition">
-                    <i class="fab fa-github text-xl"></i>
-                </a>
+    <!-- Footer -->
+    <footer class="relative z-10 py-12 border-t border-slate-900 text-center text-xs font-code text-slate-500">
+        <div class="max-w-6xl mx-auto px-6 space-y-4">
+            <div class="flex justify-center gap-6 text-sm text-slate-400">
+                <a href="https://github.com/Chiny321" target="_blank" class="hover:text-blue-400 transition"><i class="fab fa-github"></i></a>
+                <button onclick="copyToClipboard('chinedufavour042@gmail.com', 'Email copied!')" class="hover:text-blue-400 transition"><i class="fas fa-envelope"></i></button>
             </div>
-            <p class="text-xs font-code text-slate-600 pt-8">
-                &copy; Okechukwu Chinedu Favour. Built with HTML5, Tailwind CSS & JavaScript.
-            </p>
+            <p>&copy; Okechukwu Chinedu Favour. Built with HTML5, Tailwind CSS & JavaScript.</p>
         </div>
     </footer>
 
+    <!-- Interactive Script -->
+    <script>
+        // Ambient Mouse Glow Tracker
+        const glow = document.getElementById('cursorGlow');
+        document.addEventListener('mousemove', (e) => {
+            glow.style.left = `${e.clientX}px`;
+            glow.style.top = `${e.clientY}px`;
+        });
+
+        // Copy to Clipboard & Toast Alert
+        function copyToClipboard(text, msg) {
+            navigator.clipboard.writeText(text);
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        // Terminal Commands Handling
+        const terminalOutput = document.getElementById('terminalOutput');
+        const terminalInput = document.getElementById('terminalInput');
+
+        const commands = {
+            help: `Available commands:
+  <span class="text-blue-400">skills</span>   - List technical stack & tools
+  <span class="text-blue-400">siwes</span>    - Show SIWES industrial training placement details
+  <span class="text-blue-400">capstone</span> - Show Final Year research project info
+  <span class="text-blue-400">contact</span>  - Get developer contact details
+  <span class="text-blue-400">clear</span>    - Clear terminal screen`,
+            
+            skills: `Primary Technical Stack:
+  Backend:   C# ASP.NET Core Web API (.NET 8), Entity Framework Core
+  Database:  PostgreSQL (Npgsql), SQLite, MySQL
+  Languages: C#, Python, JavaScript (ES6+), SQL, HTML5/CSS3
+  DevOps/OS: Ubuntu Linux, Git, Docker, Command Line Utilities`,
+            
+            siwes: `SIWES Placement Summary:
+  Institution: EarlyCode Institute, Abuja
+  Supervisor:  Mr. Henry
+  Key Focus:   Python Data Science, C# Web API Engineering, PostgreSQL Schema Design`,
+            
+            capstone: `Final Year Capstone Project:
+  Title: Automated Vulnerability Snapshotter for SMEs
+  Tech:  Python, Flask, POSIX Sockets, SQLite, System Telemetry`,
+            
+            contact: `Developer Contact:
+  Name:     Okechukwu Chinedu Favour
+  School:   Godfrey Okoye University (400 Level CS)
+  GitHub:   https://github.com/Chiny321`
+        };
+
+        function runCommand(cmd) {
+            const cleanCmd = cmd.trim().toLowerCase();
+            if (cleanCmd === 'clear') {
+                terminalOutput.innerHTML = '<p class="text-slate-500">Terminal cleared.</p>';
+                return;
+            }
+
+            const pUser = document.createElement('p');
+            pUser.innerHTML = `<span class="text-emerald-400">favour@dev:~$</span> ${cmd}`;
+            terminalOutput.appendChild(pUser);
+
+            const pResult = document.createElement('div');
+            pResult.className = 'text-slate-300 pl-2 whitespace-pre-line border-l border-purple-500/50 my-1';
+            
+            if (commands[cleanCmd]) {
+                pResult.innerHTML = commands[cleanCmd];
+            } else {
+                pResult.innerHTML = `<span class="text-red-400">Command not found: ${cmd}</span>. Type <span class="text-purple-400 font-bold">help</span> for commands.`;
+            }
+
+            terminalOutput.appendChild(pResult);
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        }
+
+        function handleTerminalSubmit(e) {
+            e.preventDefault();
+            const val = terminalInput.value;
+            if (val) {
+                runCommand(val);
+                terminalInput.value = '';
+            }
+        }
+    </script>
 </body>
 </html>
